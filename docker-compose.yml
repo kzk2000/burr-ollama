@@ -1,0 +1,50 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    hostname: ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./models:/root/.ollama/models
+    networks:
+      - burr-network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: ["gpu"]
+
+  burr_streamlit:
+    hostname: burr_streamlit
+    container_name: burr_streamlit
+    build:
+      context: docker/burr_streamlit
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    ports:
+      - "8501:8501"
+    volumes:  # [host volume directory]:[container volume directory]
+      - ./app:/app
+    networks:
+      - burr-network
+
+#  we don't really use this as we build our own with Streamlit
+#  open-webui:
+#    image: ghcr.io/open-webui/open-webui:main
+#    container_name: open-webui
+#    ports:
+#      - "3000:8080"
+#    environment:
+#      - OLLAMA_BASE_URL=http://ollama:11434
+#    volumes:
+#      - ./backend/data:/app/backend/data
+#    networks:
+#      - genai-network
+
+networks:
+  burr-network:
+    driver: bridge
+    name: burr-network

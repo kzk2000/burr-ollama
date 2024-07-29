@@ -1,0 +1,9 @@
+burr[start]
+sf-hamilton[visualization]
+chromadb
+numpy
+ollama
+pandas
+streamlit
+
+
